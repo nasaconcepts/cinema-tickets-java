@@ -85,4 +85,11 @@ public class TicketServiceImplTest {
         verify(ticketPaymentService,never()).makePayment(anyLong(),anyInt());
         verify(seatReservationService,never()).reserveSeat(anyLong(),anyInt());
     }
+
+    @Test
+    public void testMaximumOf20TicketsAllowedPerPurchase(){
+        fail("testing if maximum of 20 tickets can be purchased --RED Status");
+
+
+    }
 }
