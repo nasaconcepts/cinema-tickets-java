@@ -118,4 +118,8 @@ public class TicketServiceImplTest {
         verify(seatReservationService).reserveSeat(anyLong(),anyInt());
 
     }
+    @Test
+    public void testTotalSeatCalculatedIsLessByInfactTickets(){
+        fail("Total number of seat calculated should be less minus infact count: RED testing");
+    }
 }
