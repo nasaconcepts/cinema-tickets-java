@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 public class TicketServiceImpl implements TicketService {
+    public static final int MAXIMUM_TICKET_TO_PURCHASE_PER_TRANSACTION = 20;
     /**
      * Should only have private methods other than the one below.
      */
@@ -30,26 +31,35 @@ public class TicketServiceImpl implements TicketService {
         int totalAmount = 30;
         int totalNoOfTickets = 20;
         Map<String, Integer> ticketSummary = new HashMap<>();
+        //Building Ticket summary
+        for (TicketTypeRequest ticket : ticketTypeRequests) {
+            ticketSummary.put(ticket.getTicketType().name(), ticket.getNoOfTickets());
+
+        }
+
 
         if (accountId < 1) {
             throw new InvalidPurchaseException();
         }
         //Calculating total number of tickets
         totalNoOfTickets = getTotalNoOfTickets(ticketTypeRequests, ticketSummary);
-        if (totalNoOfTickets > 20) {
+        if (totalNoOfTickets > MAXIMUM_TICKET_TO_PURCHASE_PER_TRANSACTION) {
             throw new InvalidPurchaseException();
         }
 
-        //Calculating the number of seat to be assigned based on the business rules provided
-        totalSeat = getTotalSeat(ticketSummary);
+
 
         //Validate children guardian(Adult present) at the cinema
-        if(isAdultNotWithMinors(ticketSummary)){
+        if (isAdultNotWithMinors(ticketSummary)) {
             throw new InvalidPurchaseException();
         }
 
         //calculating the correct amount to be sent to payment service
         totalAmount = getTotalAmount(ticketTypeRequests, ticketSummary);
+
+        //Calculating the number of seat to be assigned based on the business rules provided
+
+        totalSeat = getTotalSeat(ticketSummary);
 
 
         ticketPaymentService.makePayment(accountId, totalAmount);
@@ -59,9 +69,7 @@ public class TicketServiceImpl implements TicketService {
 
     private static int getTotalNoOfTickets(TicketTypeRequest[] ticketTypeRequests, Map<String, Integer> ticketSummary) {
         int totalNoOfTickets;
-        for (TicketTypeRequest ticketTypeRequest : ticketTypeRequests) {
-            ticketSummary.put(ticketTypeRequest.getTicketType().name(), ticketTypeRequest.getNoOfTickets());
-        }
+
         totalNoOfTickets = ticketSummary.values().stream().reduce(0, (sum, noOfTickets) -> sum + noOfTickets);
         return totalNoOfTickets;
     }
@@ -69,29 +77,34 @@ public class TicketServiceImpl implements TicketService {
     private static int getTotalAmount(TicketTypeRequest[] ticketTypeRequests, Map<String, Integer> ticketSummary) {
         int totalAmount;
         List<Integer> priceList = new ArrayList<>();
-        for(TicketTypeRequest ticketRequest: ticketTypeRequests){
+
+        for (TicketTypeRequest ticketRequest : ticketTypeRequests) {
             String type = ticketRequest.getTicketType().name();
-            int ticketNo = ticketSummary.get(type);
-            int amountPerType = ticketNo* PriceUnitUtil.getPriceUnits().get(type);
+
+            Integer ticketNo = ticketSummary.get(type);
+
+            Integer amountPerType = ticketNo * PriceUnitUtil.getPriceUnits().get(type);
             priceList.add(amountPerType);
 
         }
-        totalAmount = priceList.stream().reduce(0,Integer::sum);
+        totalAmount = priceList.stream().reduce(0, Integer::sum);
         return totalAmount;
     }
 
     private static boolean isAdultNotWithMinors(Map<String, Integer> ticketSummary) {
-       return (!ticketSummary.containsKey(TicketTypeRequest.Type.ADULT.name()) || ticketSummary
-                .get(TicketTypeRequest.Type.ADULT.name()) < 1) ;
+        return (!ticketSummary.containsKey(TicketTypeRequest.Type.ADULT.name()) || ticketSummary
+                .get(TicketTypeRequest.Type.ADULT.name()) < 1);
     }
 
-    private static int getTotalSeat(Map<String, Integer> ticketSummary) {
+    private  int getTotalSeat(Map<String, Integer> ticketSummary) {
         int totalSeat;
-        Map<String, Integer> seatSummary;
-        seatSummary = ticketSummary;
+        Map<String,Integer> seatSummary = new HashMap<>();
 
-        if (seatSummary.containsKey(TicketTypeRequest.Type.INFANT.name())) {
-            seatSummary.remove(TicketTypeRequest.Type.INFANT.name());
+
+        for(Map.Entry<String,Integer> entry : ticketSummary.entrySet()){
+            if (!entry.getKey().equals(TicketTypeRequest.Type.INFANT.name())) {
+                seatSummary.put(entry.getKey(),entry.getValue());
+            }
         }
 
         totalSeat = seatSummary.values().stream().reduce(0, Integer::sum);
