@@ -20,6 +20,11 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public void purchaseTickets(Long accountId, TicketTypeRequest... ticketTypeRequests) throws InvalidPurchaseException {
+    int totalSeat = 4;
+    int totalAmount = 30;
+
+    ticketPaymentService.makePayment(accountId,totalAmount);
+    seatReservationService.reserveSeat(accountId,totalSeat);
 
     }
 
