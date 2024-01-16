@@ -103,4 +103,8 @@ public class TicketServiceImplTest {
         verify(seatReservationService,never()).reserveSeat(anyLong(),anyInt());
 
     }
+    @Test
+    public void testInfantNotEntitledToSeat(){
+        fail("Infant are not entitled to seat, they must be carried on the laps of adults");
+    }
 }
