@@ -126,7 +126,7 @@ public class TicketServiceImplTest {
     }
     @Test
     public void testTotalSeatCalculatedIsLessByInfantTickets() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-       // fail("Total number of seat calculated should be less minus infact count: RED testing");
+       // fail("Total number of seat calculated should be less minus infant count: RED testing");
         //Given
         Map<String,Integer> ticketSummary = new HashMap<>();
         ticketSummary.put(TicketTypeRequest.Type.INFANT.name(), 3);
@@ -140,5 +140,9 @@ public class TicketServiceImplTest {
         int actualSeatReserved = (int)seatMethod.invoke(ticketService,ticketSummary);
         //Assert
         assertEquals(expectedNoOfSeat,actualSeatReserved);
+    }
+    @Test
+    public void testChildAndInfantTicketsCannotBePurchasedWithoutAdultTicket(){
+        fail("Child and Infact Ticket cannot be purchased without Adult Ticket");
     }
 }
