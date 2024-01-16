@@ -27,6 +27,7 @@ public class TicketServiceImpl implements TicketService {
         int totalAmount = 30;
         int totalNoOfTickets = 20;
         Map<String, Integer> ticketSummary = new HashMap<>();
+        Map<String, Integer> seatSummary = new HashMap<>();
         if (accountId < 1) {
             throw new InvalidPurchaseException();
         }
@@ -38,6 +39,16 @@ public class TicketServiceImpl implements TicketService {
         if (totalNoOfTickets > 20) {
             throw new InvalidPurchaseException();
         }
+
+        //Calculating the number of seat to be assigned based on the business rules provided
+        seatSummary = ticketSummary;
+        if(ticketSummary.containsKey(TicketTypeRequest.Type.INFANT.name())){
+            seatSummary.remove(TicketTypeRequest.Type.INFANT);
+        }
+        totalSeat = seatSummary.values().stream().reduce(0,(sum,noOfTickets)->sum+noOfTickets);
+
+
+
 
         ticketPaymentService.makePayment(accountId, totalAmount);
         seatReservationService.reserveSeat(accountId, totalSeat);

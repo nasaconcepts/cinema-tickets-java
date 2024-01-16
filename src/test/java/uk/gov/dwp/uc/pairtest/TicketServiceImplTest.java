@@ -105,6 +105,17 @@ public class TicketServiceImplTest {
     }
     @Test
     public void testInfantNotEntitledToSeat(){
-        fail("Infant are not entitled to seat, they must be carried on the laps of adults");
+        //fail("Infant are not entitled to seat, they must be carried on the laps of adults");
+        //Given
+        Long accountId =12345L;
+        TicketTypeRequest infantRequest = new TicketTypeRequest(TicketTypeRequest.Type.INFANT,3);
+        TicketTypeRequest childRequest = new TicketTypeRequest(TicketTypeRequest.Type.CHILD,5);
+        TicketTypeRequest adultRequest = new TicketTypeRequest(TicketTypeRequest.Type.ADULT,10);
+        //Act
+        ticketService.purchaseTickets(accountId,infantRequest,childRequest,adultRequest);
+        //Assert
+        verify(ticketPaymentService).makePayment(anyLong(),anyInt());
+        verify(seatReservationService).reserveSeat(anyLong(),anyInt());
+
     }
 }
