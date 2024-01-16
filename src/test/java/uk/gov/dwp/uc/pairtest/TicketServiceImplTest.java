@@ -69,4 +69,8 @@ public class TicketServiceImplTest {
         verify(ticketPaymentService).makePayment(anyLong(),anyInt());
         verify(seatReservationService).reserveSeat(anyLong(),anyInt());
     }
+    @Test
+    public void testAccountIdLessThanOneIsInvalid(){
+        fail("Account less than 1 are invalid");
+    }
 }
