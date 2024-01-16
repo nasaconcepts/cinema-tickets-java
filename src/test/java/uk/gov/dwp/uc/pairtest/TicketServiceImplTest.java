@@ -10,6 +10,12 @@ import thirdparty.seatbooking.SeatReservationServiceImpl;
 import uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest;
 import uk.gov.dwp.uc.pairtest.exception.InvalidPurchaseException;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -119,7 +125,20 @@ public class TicketServiceImplTest {
 
     }
     @Test
-    public void testTotalSeatCalculatedIsLessByInfactTickets(){
-        fail("Total number of seat calculated should be less minus infact count: RED testing");
+    public void testTotalSeatCalculatedIsLessByInfantTickets() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+       // fail("Total number of seat calculated should be less minus infact count: RED testing");
+        //Given
+        Map<String,Integer> ticketSummary = new HashMap<>();
+        ticketSummary.put(TicketTypeRequest.Type.INFANT.name(), 3);
+        ticketSummary.put(TicketTypeRequest.Type.CHILD.name(), 4);
+        ticketSummary.put(TicketTypeRequest.Type.ADULT.name(), 5);
+        //Note private method testing on the way, employing Java reflection on this
+        Method seatMethod = TicketServiceImpl.class.getDeclaredMethod("getTotalSeat", Map.class);
+        seatMethod.setAccessible(true);
+        int expectedNoOfSeat = 9;
+        //Act
+        int actualSeatReserved = (int)seatMethod.invoke(ticketService,ticketSummary);
+        //Assert
+        assertEquals(expectedNoOfSeat,actualSeatReserved);
     }
 }

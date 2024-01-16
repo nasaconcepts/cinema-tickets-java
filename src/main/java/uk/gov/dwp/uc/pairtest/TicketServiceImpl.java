@@ -51,12 +51,14 @@ public class TicketServiceImpl implements TicketService {
 
     private static int getTotalSeat(Map<String, Integer> ticketSummary) {
         int totalSeat;
-        Map<String, Integer> seatSummary = new HashMap<>();
+        Map<String, Integer> seatSummary;
         seatSummary = ticketSummary;
-        if(ticketSummary.containsKey(TicketTypeRequest.Type.INFANT.name())){
-            seatSummary.remove(TicketTypeRequest.Type.INFANT);
+
+        if (seatSummary.containsKey(TicketTypeRequest.Type.INFANT.name())) {
+            seatSummary.remove(TicketTypeRequest.Type.INFANT.name());
         }
-        totalSeat = seatSummary.values().stream().reduce(0,(sum,noOfTickets)->sum+noOfTickets);
+
+        totalSeat = seatSummary.values().stream().reduce(0, Integer::sum);
         return totalSeat;
     }
 
