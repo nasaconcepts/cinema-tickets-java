@@ -43,10 +43,20 @@ public class TicketServiceImpl implements TicketService {
         //Calculating the number of seat to be assigned based on the business rules provided
         totalSeat = getTotalSeat(ticketSummary);
 
+        //Validate children guardian(Adult present) at the cinema
+        if(isAdultNotWithMinors(ticketSummary)){
+            throw new InvalidPurchaseException();
+        }
+
 
         ticketPaymentService.makePayment(accountId, totalAmount);
         seatReservationService.reserveSeat(accountId, totalSeat);
 
+    }
+
+    private static boolean isAdultNotWithMinors(Map<String, Integer> ticketSummary) {
+       return (!ticketSummary.containsKey(TicketTypeRequest.Type.ADULT.name()) || ticketSummary
+                .get(TicketTypeRequest.Type.ADULT.name()) < 1) ;
     }
 
     private static int getTotalSeat(Map<String, Integer> ticketSummary) {

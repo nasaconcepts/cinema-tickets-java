@@ -141,8 +141,20 @@ public class TicketServiceImplTest {
         //Assert
         assertEquals(expectedNoOfSeat,actualSeatReserved);
     }
-    @Test
+    @Test(expected = InvalidPurchaseException.class)
     public void testChildAndInfantTicketsCannotBePurchasedWithoutAdultTicket(){
-        fail("Child and Infact Ticket cannot be purchased without Adult Ticket");
+       // fail("Child and Infact Ticket cannot be purchased without Adult Ticket");
+        //Given
+        Long accountId =12345L;
+        TicketTypeRequest infantRequest = new TicketTypeRequest(TicketTypeRequest.Type.INFANT,3);
+        TicketTypeRequest childRequest = new TicketTypeRequest(TicketTypeRequest.Type.CHILD,5);
+
+        //Act
+        ticketService.purchaseTickets(accountId,infantRequest,childRequest);
+        //Assert
+        verify(ticketPaymentService,never()).makePayment(anyLong(),anyInt());
+        verify(seatReservationService,never()).reserveSeat(accountId,anyInt());
+
     }
+
 }
