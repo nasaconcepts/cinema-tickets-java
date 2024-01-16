@@ -143,7 +143,7 @@ public class TicketServiceImplTest {
     }
     @Test(expected = InvalidPurchaseException.class)
     public void testChildAndInfantTicketsCannotBePurchasedWithoutAdultTicket(){
-       // fail("Child and Infact Ticket cannot be purchased without Adult Ticket");
+       // fail("Child and Infant Ticket cannot be purchased without Adult Ticket");
         //Given
         Long accountId =12345L;
         TicketTypeRequest infantRequest = new TicketTypeRequest(TicketTypeRequest.Type.INFANT,3);
@@ -155,6 +155,10 @@ public class TicketServiceImplTest {
         verify(ticketPaymentService,never()).makePayment(anyLong(),anyInt());
         verify(seatReservationService,never()).reserveSeat(accountId,anyInt());
 
+    }
+    @Test
+    public void testCorrectTicketAmountIsPassedToPaymentService(){
+        fail("Confirming that correct amount for the ticket is passed for payment");
     }
 
 }
