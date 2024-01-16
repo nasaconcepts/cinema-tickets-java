@@ -8,10 +8,12 @@ import org.mockito.junit.MockitoJUnitRunner;
 import thirdparty.paymentgateway.TicketPaymentServiceImpl;
 import thirdparty.seatbooking.SeatReservationServiceImpl;
 import uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest;
+import uk.gov.dwp.uc.pairtest.exception.InvalidPurchaseException;
 
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -69,8 +71,18 @@ public class TicketServiceImplTest {
         verify(ticketPaymentService).makePayment(anyLong(),anyInt());
         verify(seatReservationService).reserveSeat(anyLong(),anyInt());
     }
-    @Test
+    @Test(expected = InvalidPurchaseException.class)
     public void testAccountIdLessThanOneIsInvalid(){
-        fail("Account less than 1 are invalid");
+       // fail("Account less than 1 are invalid");
+        Long accountId =0L;
+
+        TicketTypeRequest infantRequest = new TicketTypeRequest(TicketTypeRequest.Type.INFANT,1);
+        TicketTypeRequest childRequest = new TicketTypeRequest(TicketTypeRequest.Type.CHILD,3);
+        TicketTypeRequest adultRequest = new TicketTypeRequest(TicketTypeRequest.Type.ADULT,2);
+        ticketService.purchaseTickets(accountId,infantRequest,childRequest,adultRequest);
+
+        //Assert
+        verify(ticketPaymentService,never()).makePayment(anyLong(),anyInt());
+        verify(seatReservationService,never()).reserveSeat(anyLong(),anyInt());
     }
 }
