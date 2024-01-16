@@ -62,8 +62,8 @@ public class TicketServiceImpl implements TicketService {
         totalSeat = getTotalSeat(ticketSummary);
 
 
-        ticketPaymentService.makePayment(accountId, totalAmount);
-        seatReservationService.reserveSeat(accountId, totalSeat);
+        ticketPaymentService.makePayment(accountId, totalAmount);//Assumed that this service does not fail
+        seatReservationService.reserveSeat(accountId, totalSeat);//Assumes that this service does not fail
 
     }
 
