@@ -188,8 +188,26 @@ public class TicketServiceImplTest {
 
     }
 @Test
-    public void testNoOfTicketRequestedIsNoTicketReserved(){
-        fail("No of ticket requested is number of ticket calculated");
+    public void testNoOfTicketRequestedIsNoTicketReserved() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        //fail("No of ticket requested is number of ticket calculated");
+    //Given
+    TicketTypeRequest infantRequest = new TicketTypeRequest(TicketTypeRequest.Type.INFANT,3);
+    TicketTypeRequest childRequest = new TicketTypeRequest(TicketTypeRequest.Type.CHILD,4);
+    TicketTypeRequest adultRequest = new TicketTypeRequest(TicketTypeRequest.Type.ADULT,5);
+    TicketTypeRequest[] ticketArray ={infantRequest,childRequest,adultRequest};
+
+    Map<String,Integer> ticketSummary = new HashMap<>();
+    ticketSummary.put(TicketTypeRequest.Type.INFANT.name(), 3);
+    ticketSummary.put(TicketTypeRequest.Type.CHILD.name(), 4);
+    ticketSummary.put(TicketTypeRequest.Type.ADULT.name(), 5);
+    int expectedNoOfTicket = 12;
+    Method getTotalNoOfTicketsMethod = TicketServiceImpl.class.getDeclaredMethod("getTotalNoOfTickets",TicketTypeRequest[].class, Map.class);
+    getTotalNoOfTicketsMethod.setAccessible(true);
+    //Act
+    int actualNoOfTickets = (int) getTotalNoOfTicketsMethod.invoke(ticketService,ticketArray,ticketSummary);
+
+    //Assert
+    assertEquals(expectedNoOfTicket,actualNoOfTickets);
     }
 
 }

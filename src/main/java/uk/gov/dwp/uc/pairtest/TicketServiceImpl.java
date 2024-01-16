@@ -35,10 +35,7 @@ public class TicketServiceImpl implements TicketService {
             throw new InvalidPurchaseException();
         }
         //Calculating total number of tickets
-        for (TicketTypeRequest ticketTypeRequest : ticketTypeRequests) {
-            ticketSummary.put(ticketTypeRequest.getTicketType().name(), ticketTypeRequest.getNoOfTickets());
-        }
-        totalNoOfTickets = ticketSummary.values().stream().reduce(0, (sum, noOfTickets) -> sum + noOfTickets);
+        totalNoOfTickets = getTotalNoOfTickets(ticketTypeRequests, ticketSummary);
         if (totalNoOfTickets > 20) {
             throw new InvalidPurchaseException();
         }
@@ -58,6 +55,15 @@ public class TicketServiceImpl implements TicketService {
         ticketPaymentService.makePayment(accountId, totalAmount);
         seatReservationService.reserveSeat(accountId, totalSeat);
 
+    }
+
+    private static int getTotalNoOfTickets(TicketTypeRequest[] ticketTypeRequests, Map<String, Integer> ticketSummary) {
+        int totalNoOfTickets;
+        for (TicketTypeRequest ticketTypeRequest : ticketTypeRequests) {
+            ticketSummary.put(ticketTypeRequest.getTicketType().name(), ticketTypeRequest.getNoOfTickets());
+        }
+        totalNoOfTickets = ticketSummary.values().stream().reduce(0, (sum, noOfTickets) -> sum + noOfTickets);
+        return totalNoOfTickets;
     }
 
     private static int getTotalAmount(TicketTypeRequest[] ticketTypeRequests, Map<String, Integer> ticketSummary) {
