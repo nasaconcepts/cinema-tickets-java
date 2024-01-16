@@ -6,6 +6,9 @@ import thirdparty.seatbooking.SeatReservationServiceImpl;
 import uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest;
 import uk.gov.dwp.uc.pairtest.exception.InvalidPurchaseException;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class TicketServiceImpl implements TicketService {
     /**
      * Should only have private methods other than the one below.
@@ -20,14 +23,24 @@ public class TicketServiceImpl implements TicketService {
 
     @Override
     public void purchaseTickets(Long accountId, TicketTypeRequest... ticketTypeRequests) throws InvalidPurchaseException {
-    int totalSeat = 4;
-    int totalAmount = 30;
-    if(accountId<1){
-        throw new InvalidPurchaseException();
-    }
+        int totalSeat = 4;
+        int totalAmount = 30;
+        int totalNoOfTickets = 20;
+        Map<String, Integer> ticketSummary = new HashMap<>();
+        if (accountId < 1) {
+            throw new InvalidPurchaseException();
+        }
+        //Calculating total number of tickets
+        for (TicketTypeRequest ticketTypeRequest : ticketTypeRequests) {
+            ticketSummary.put(ticketTypeRequest.getTicketType().name(), ticketTypeRequest.getNoOfTickets());
+        }
+        totalNoOfTickets = ticketSummary.values().stream().reduce(0, (sum, noOfTickets) -> sum + noOfTickets);
+        if (totalNoOfTickets > 20) {
+            throw new InvalidPurchaseException();
+        }
 
-    ticketPaymentService.makePayment(accountId,totalAmount);
-    seatReservationService.reserveSeat(accountId,totalSeat);
+        ticketPaymentService.makePayment(accountId, totalAmount);
+        seatReservationService.reserveSeat(accountId, totalSeat);
 
     }
 

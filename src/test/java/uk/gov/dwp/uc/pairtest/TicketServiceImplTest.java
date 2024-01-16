@@ -86,10 +86,21 @@ public class TicketServiceImplTest {
         verify(seatReservationService,never()).reserveSeat(anyLong(),anyInt());
     }
 
-    @Test
+    @Test(expected = InvalidPurchaseException.class)
     public void testMaximumOf20TicketsAllowedPerPurchase(){
-        fail("testing if maximum of 20 tickets can be purchased --RED Status");
+        //fail("testing if maximum of 20 tickets can be purchased --RED Status");
+        //Given
+        Long accountId =12345L;
+        TicketTypeRequest infantRequest = new TicketTypeRequest(TicketTypeRequest.Type.INFANT,3);
+        TicketTypeRequest childRequest = new TicketTypeRequest(TicketTypeRequest.Type.CHILD,5);
+        TicketTypeRequest adultRequest = new TicketTypeRequest(TicketTypeRequest.Type.ADULT,15);
 
+        //Act
+        ticketService.purchaseTickets(accountId,infantRequest,childRequest,adultRequest);
+
+        //Assert
+        verify(ticketPaymentService,never()).makePayment(anyLong(),anyInt());
+        verify(seatReservationService,never()).reserveSeat(anyLong(),anyInt());
 
     }
 }
