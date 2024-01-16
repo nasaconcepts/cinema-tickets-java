@@ -5,8 +5,11 @@ import thirdparty.seatbooking.SeatReservationService;
 import thirdparty.seatbooking.SeatReservationServiceImpl;
 import uk.gov.dwp.uc.pairtest.domain.TicketTypeRequest;
 import uk.gov.dwp.uc.pairtest.exception.InvalidPurchaseException;
+import util.PriceUnitUtil;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TicketServiceImpl implements TicketService {
@@ -48,10 +51,27 @@ public class TicketServiceImpl implements TicketService {
             throw new InvalidPurchaseException();
         }
 
+        //calculating the correct amount to be sent to payment service
+        totalAmount = getTotalAmount(ticketTypeRequests, ticketSummary);
+
 
         ticketPaymentService.makePayment(accountId, totalAmount);
         seatReservationService.reserveSeat(accountId, totalSeat);
 
+    }
+
+    private static int getTotalAmount(TicketTypeRequest[] ticketTypeRequests, Map<String, Integer> ticketSummary) {
+        int totalAmount;
+        List<Integer> priceList = new ArrayList<>();
+        for(TicketTypeRequest ticketRequest: ticketTypeRequests){
+            String type = ticketRequest.getTicketType().name();
+            int ticketNo = ticketSummary.get(type);
+            int amountPerType = ticketNo* PriceUnitUtil.getPriceUnits().get(type);
+            priceList.add(amountPerType);
+
+        }
+        totalAmount = priceList.stream().reduce(0,Integer::sum);
+        return totalAmount;
     }
 
     private static boolean isAdultNotWithMinors(Map<String, Integer> ticketSummary) {

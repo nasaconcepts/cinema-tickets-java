@@ -12,6 +12,7 @@ import uk.gov.dwp.uc.pairtest.exception.InvalidPurchaseException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -157,8 +158,34 @@ public class TicketServiceImplTest {
 
     }
     @Test
-    public void testCorrectTicketAmountIsPassedToPaymentService(){
-        fail("Confirming that correct amount for the ticket is passed for payment");
+    public void testCorrectTicketAmountIsPassedToPaymentService() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        //fail("Confirming that correct amount for the ticket is passed for payment");
+        //Given
+
+        TicketTypeRequest infantRequest = new TicketTypeRequest(TicketTypeRequest.Type.INFANT,3);
+        TicketTypeRequest childRequest = new TicketTypeRequest(TicketTypeRequest.Type.CHILD,4);
+        TicketTypeRequest adultRequest = new TicketTypeRequest(TicketTypeRequest.Type.ADULT,5);
+        TicketTypeRequest[] ticketArray ={infantRequest,childRequest,adultRequest};
+
+        Map<String,Integer> ticketSummary = new HashMap<>();
+        ticketSummary.put(TicketTypeRequest.Type.INFANT.name(), 3);
+        ticketSummary.put(TicketTypeRequest.Type.CHILD.name(), 4);
+        ticketSummary.put(TicketTypeRequest.Type.ADULT.name(), 5);
+
+        int expectedAmount = 140;
+        // method ois private, so employing Java reflection
+        Method getTotalAmountMethod = TicketServiceImpl.class.getDeclaredMethod("getTotalAmount",TicketTypeRequest[].class, Map.class);
+        getTotalAmountMethod.setAccessible(true);
+
+
+        //getTotalAmount
+
+        //Act
+        int actualAmount = (int)getTotalAmountMethod.invoke(ticketService,ticketArray,ticketSummary);
+
+        //Assert
+        assertEquals(expectedAmount,actualAmount);
+
     }
 
 }
