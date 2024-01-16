@@ -187,5 +187,9 @@ public class TicketServiceImplTest {
         assertEquals(expectedAmount,actualAmount);
 
     }
+@Test
+    public void testNoOfTicketRequestedIsNoTicketReserved(){
+        fail("No of ticket requested is number of ticket calculated");
+    }
 
 }
